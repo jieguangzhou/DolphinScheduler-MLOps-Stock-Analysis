@@ -1,0 +1,8 @@
+pandas
+tqdm
+baostock
+sqlalchemy
+ta-lib
+pymysql
+click
+akshare
