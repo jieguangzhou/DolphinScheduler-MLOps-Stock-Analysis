@@ -9,17 +9,28 @@ from dmsa.db import create_mysql_engine
 from .utils import load_names
 
 
+def concat(datas_g):
+    datas = []
+    for d_g in datas_g:
+        datas.append(d_g)
+    datas = pd.concat(datas)
+    return datas
+
+
 def load_signals(signal_name):
     engine = create_mysql_engine()
     signals = pd.read_sql(
-        f"SELECT code, date FROM signal_{signal_name} WHERE buy=1", con=engine
+        f"SELECT code, date FROM signal_{signal_name} WHERE buy=1", con=engine, chunksize=50000,
     )
+    signals = concat(signals)
     return signals
 
 
 def load_features(feature_name):
     engine = create_mysql_engine()
-    features = pd.read_sql(f"SELECT * FROM feature_{feature_name}", con=engine)
+    features = pd.read_sql(
+        f"SELECT * FROM feature_{feature_name}", con=engine, chunksize=50000)
+    features = concat(features)
     return features
 
 
@@ -27,6 +38,7 @@ def load_signal_feature(signal_name, feature_name):
     sql_query = f"SELECT * FROM signal_{signal_name} a LEFT JOIN feature_{feature_name} b ON a.code = b.code AND a.date = b.date WHERE a.buy=1;"
     print(sql_query)
     datas = pd.read_sql(sql_query, con=create_mysql_engine())
+    datas = concat(datas)
     return datas
 
 
@@ -49,7 +61,8 @@ def set_labels(signals, data_path, next_n=1):
         path = os.path.join(data_path, f"{code}.csv")
         data_df = pd.read_csv(path)
         next_n_df = data_df.shift(-next_n)
-        data_df["y"] = (next_n_df["close"] - data_df["close"]) / data_df["close"]
+        data_df["y"] = (next_n_df["close"] -
+                        data_df["close"]) / data_df["close"]
 
         data_df = data_df[~data_df["y"].isna()]
         data_df["label"] = (data_df["y"] > 0) * 1
@@ -65,7 +78,8 @@ def set_labels(signals, data_path, next_n=1):
 
 
 def set_dataset_index(dataset):
-    dataset.index = dataset.apply(lambda x: x["date"] + "$" + x["code"], axis=1)
+    dataset.index = dataset.apply(
+        lambda x: x["date"] + "$" + x["code"], axis=1)
     dataset.pop("date")
     dataset.pop("code")
 
@@ -89,6 +103,7 @@ def get_training_data(feature_signal_file, data_path, save_path, test_date_n=3):
     datas["label"] = datas["label"].astype(int)
 
     dates = sorted(set(datas["date"]))
+    dates = dates[-60:]
     datas = datas.sort_values("date")
 
     train_dates = dates[:-test_date_n]
