@@ -20,7 +20,9 @@ def concat(datas_g):
 def load_signals(signal_name):
     engine = create_mysql_engine()
     signals = pd.read_sql(
-        f"SELECT code, date FROM signal_{signal_name} WHERE buy=1", con=engine, chunksize=50000,
+        f"SELECT code, date FROM signal_{signal_name} WHERE buy=1",
+        con=engine,
+        chunksize=50000,
     )
     signals = concat(signals)
     return signals
@@ -29,7 +31,8 @@ def load_signals(signal_name):
 def load_features(feature_name):
     engine = create_mysql_engine()
     features = pd.read_sql(
-        f"SELECT * FROM feature_{feature_name}", con=engine, chunksize=50000)
+        f"SELECT * FROM feature_{feature_name}", con=engine, chunksize=50000
+    )
     features = concat(features)
     return features
 
@@ -61,8 +64,7 @@ def set_labels(signals, data_path, next_n=1):
         path = os.path.join(data_path, f"{code}.csv")
         data_df = pd.read_csv(path)
         next_n_df = data_df.shift(-next_n)
-        data_df["y"] = (next_n_df["close"] -
-                        data_df["close"]) / data_df["close"]
+        data_df["y"] = (next_n_df["close"] - data_df["close"]) / data_df["close"]
 
         data_df = data_df[~data_df["y"].isna()]
         data_df["label"] = (data_df["y"] > 0) * 1
@@ -78,8 +80,7 @@ def set_labels(signals, data_path, next_n=1):
 
 
 def set_dataset_index(dataset):
-    dataset.index = dataset.apply(
-        lambda x: x["date"] + "$" + x["code"], axis=1)
+    dataset.index = dataset.apply(lambda x: x["date"] + "$" + x["code"], axis=1)
     dataset.pop("date")
     dataset.pop("code")
 

@@ -1,6 +1,7 @@
+from math import ceil
+
 import pandas as pd
 import talib
-from math import ceil
 
 
 def calc_feature(df):
@@ -17,7 +18,8 @@ def calc_feature(df):
             if delta_n == 0:
                 continue
             features[f"delta_{delta_n}_ma_{timeperiod}"] = (
-                ma - ma.shift(delta_n)) / ma.shift(delta_n)
+                ma - ma.shift(delta_n)
+            ) / ma.shift(delta_n)
         features[f"ma_{timeperiod}"] = relative_ma
     features_df = pd.DataFrame(features)
 

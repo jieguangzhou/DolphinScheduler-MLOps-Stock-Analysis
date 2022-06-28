@@ -7,7 +7,7 @@ def calc_signal(df, fast_ma_n=5, slow_ma_n=10):
     slow_ma = talib.SMA(df["close"], timeperiod=slow_ma_n)
 
     last_df = df.shift(1)
-    changes = (df['close'] - last_df['close']) / last_df['close']
+    changes = (df["close"] - last_df["close"]) / last_df["close"]
 
     golden_cross = 1 * ((fast_ma > slow_ma) & (changes < 0.09))
 
