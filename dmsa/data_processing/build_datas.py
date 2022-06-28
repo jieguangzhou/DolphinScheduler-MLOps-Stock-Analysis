@@ -95,7 +95,7 @@ def get_inference_datas(feature_signal_file, save_path):
     print(f"datas : {len(datas)}")
 
 
-def get_training_data(feature_signal_file, data_path, save_path, test_date_n=3):
+def get_training_data(feature_signal_file, data_path, save_path, test_date_n=7):
     datas = create_datas(feature_signal_file)
     datas = set_labels(datas, data_path)
 
@@ -103,7 +103,7 @@ def get_training_data(feature_signal_file, data_path, save_path, test_date_n=3):
     datas["label"] = datas["label"].astype(int)
 
     dates = sorted(set(datas["date"]))
-    dates = dates[-60:]
+    dates = dates[-121:]
     datas = datas.sort_values("date")
 
     train_dates = dates[:-test_date_n]

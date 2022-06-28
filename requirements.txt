@@ -6,3 +6,4 @@ ta-lib
 pymysql
 click
 akshare
+pytdx

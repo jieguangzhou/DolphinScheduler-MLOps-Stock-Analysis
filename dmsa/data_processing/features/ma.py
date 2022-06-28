@@ -7,7 +7,7 @@ def calc_feature(df):
     close = df["close"]
 
     timeperiods = [2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233]
-    delta_ratios = [1, 2, 3, 5, 8, 13, 21]
+    delta_ratios = [0.1, 0.3, 0.4, 0.5]
     features = {}
     for timeperiod in timeperiods:
         ma = talib.SMA(close, timeperiod=timeperiod)
