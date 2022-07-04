@@ -26,3 +26,11 @@ class CONFIG:
     MYSQL_DATABASE = 'dolphinscheduler_mlops_stock'
 
 ```
+
+After preparing the configuration, we need to prepare the python environment
+
+```shell
+virtualenv -p /usr/bin/python3 env
+source env/bin/activate
+pip install -r requirements.txt
+```
