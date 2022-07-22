@@ -1,0 +1,23 @@
+params:
+  process_name: &process_name run_system
+  project: &project "/home/lucky/WhaleOps/DolphinScheduler-MLOps-Stock-Analysis"
+
+
+Process:
+  name: *process_name
+  param:
+      project: *project
+  execute: run
+
+Tasks:
+  - 
+    TaskType: SubProcess 
+    params:
+      name: prepare_datas
+      process_definition_name: prepare_datas
+  - 
+    TaskType: SubProcess
+    dependencies: [prepare_datas]
+    params:
+      name: training_model 
+      process_definition_name: training_model

@@ -1,0 +1,56 @@
+Params:
+  process_name: &process_name prepare_datas
+  project: &project "/home/lucky/WhaleOps/DolphinScheduler-MLOps-Stock-Analysis"
+
+Varible:
+  local_params: &local_params { "prop": "project", "direct": "IN", "type": "VARCHAR", "value": "${project}"}
+
+Process:
+  name: *process_name
+  param:
+      project: *project
+
+Tasks:
+  - 
+    TaskType: Shell
+    params:
+      name: download_data
+      command: |
+                export PYTHONPATH=${project}
+                source ${project}/env/bin/activate
+                data_path=${project}/data/daily
+                python -m dmsa.data.download ${data_path} 200 
+      local_params: 
+        - *local_params 
+
+  - 
+    TaskType: Shell
+    dependencies: [download_data]
+    params:
+      name: calc_signals 
+      command: |
+                export PYTHONPATH=${project}
+                source ${project}/env/bin/activate
+                data_path=${project}/data/daily
+                python -m dmsa.data_processing.calc_signals \
+                      --data_path ${data_path} \
+                      --name_file ${project}/feature_signal.txt 
+      local_params: 
+        - *local_params 
+
+
+  - 
+    TaskType: Shell
+    dependencies: [download_data]
+    params:
+      name: calc_features 
+      command: |
+                export PYTHONPATH=${project}
+                source ${project}/env/bin/activate
+                data_path=${project}/data/daily
+                python -m dmsa.data_processing.calc_features \
+                    --data_path $data_path \
+                    --name_file ${project}/feature_signal.txt
+      local_params:
+        - *local_params 
+

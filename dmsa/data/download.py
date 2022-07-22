@@ -17,5 +17,9 @@ def download_all_stocks(start_date=None, end_date=None, save_folder="data", n=No
 
 if __name__ == "__main__":
     save_folder = sys.argv[1]
-    download_all_stocks(start_date="2021-01-01", save_folder=save_folder)
+    if len(sys.argv) == 3:
+        n = int(sys.argv[2])
+    else:
+        n = None
+    download_all_stocks(start_date="2021-01-01", save_folder=save_folder, n=n)
     print(os.path.abspath(save_folder))

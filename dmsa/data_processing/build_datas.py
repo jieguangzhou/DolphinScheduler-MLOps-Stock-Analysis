@@ -1,10 +1,13 @@
 import os
+from tempfile import TemporaryDirectory
 
 import click
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
 from dmsa.db import create_mysql_engine
+from dmsa.data_api.s3_api import upload_data
 
 from .utils import load_names
 
@@ -67,7 +70,7 @@ def set_labels(signals, data_path, next_n=1):
         data_df["y"] = (next_n_df["close"] - data_df["close"]) / data_df["close"]
 
         data_df = data_df[~data_df["y"].isna()]
-        data_df["label"] = (data_df["y"] > 0) * 1
+        data_df["label"] = np.log(data_df["y"] + 1)
 
         sub_signal_df = pd.merge(
             sub_signal_df, data_df[["label", "date", "y"]], how="left", on=["date"]
@@ -91,9 +94,8 @@ def get_inference_datas(feature_signal_file, save_path):
     datas = datas[datas["date"] == date]
     set_dataset_index(datas)
 
-    datas.to_csv(os.path.join(save_path), index=True)
-    print(f"save data to {save_path}")
-    print(f"datas : {len(datas)}")
+    # datas.to_csv(os.path.join(save_path), index=True)
+    save_dataframe(datas, save_path)
 
 
 def get_training_data(feature_signal_file, data_path, save_path, test_date_n=7):
@@ -101,33 +103,34 @@ def get_training_data(feature_signal_file, data_path, save_path, test_date_n=7):
     datas = set_labels(datas, data_path)
 
     datas = datas[~datas["label"].isna()]
-    datas["label"] = datas["label"].astype(int)
 
     dates = sorted(set(datas["date"]))
     dates = dates[-121:]
     datas = datas.sort_values("date")
 
-    train_dates = dates[:-test_date_n]
-    test_dates = dates[-test_date_n:]
-    model_datas = datas[datas.columns.drop("y")]
-
-    train_dataset = model_datas[model_datas["date"].isin(train_dates)]
-    test_dataset = model_datas[model_datas["date"].isin(test_dates)]
-    set_dataset_index(train_dataset)
-    set_dataset_index(test_dataset)
-
-    os.makedirs(save_path, exist_ok=True)
-    print(f"save data to {save_path}")
-    print(f"train_dataset : {len(train_dataset)}")
-    print(f"test_dataset : {len(test_dataset)}")
-
-    train_dataset.to_csv(os.path.join(save_path, "train.csv"), index=True)
-    test_dataset.to_csv(os.path.join(save_path, "test.csv"), index=True)
-
+    columns = list(datas.columns)
+    columns.insert(0, columns.pop(columns.index("label")))
+    datas = datas[columns]
     set_dataset_index(datas)
-    datas.to_csv(os.path.join(save_path, "source.csv"), index=True)
+    save_dataframe(datas[:4000], save_path)
 
-    return train_dataset, test_dataset
+    return datas
+
+
+def save_dataframe(df, path):
+    if path.startswith("s3://"):
+        with TemporaryDirectory() as folder_path:
+            df_path = os.path.join(folder_path, "df.csv")
+            df.to_csv(df_path, index=True)
+            save_path = path.replace("s3://", "")
+            (bucket, key) = save_path.split("/", 1)
+            upload_data(bucket, key, df_path)
+
+    else:
+        os.makedirs(os.path.split(path)[1], exist_ok=True)
+        df.to_csv(path, index=True)
+
+    print(f"save data to {path}")
 
 
 @click.command()

@@ -1,0 +1,29 @@
+params:
+  process_name: &process_name training_model
+  project: &project "/home/lucky/whaleops/dolphinscheduler-mlops-stock-analysis"
+
+
+Process:
+  name: *process_name
+  param:
+      project: *project
+
+Tasks:
+  - 
+    TaskType: Shell
+    params:
+      name: prepare_data 
+      command: |
+                export PYTHONPATH=${project}
+                source ${project}/env/bin/activate
+                save_data_path=${project}/data/training
+                python -m dmsa.data_processing.build_datas \
+                    --task_type train \
+                    --config ${project}/feature_signal.txt \
+                    --save_path ${save_data_path} \
+                    --data_path ${project}/data/daily
+
+                echo "#{setValue(data_path=${save_data_path})}"
+      local_params: 
+        - { "prop": "data_path", "direct": "out", "type": "varchar"} 
+
