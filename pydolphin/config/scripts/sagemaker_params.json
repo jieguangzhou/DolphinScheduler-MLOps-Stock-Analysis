@@ -1,0 +1,14 @@
+{
+    "ParallelismConfiguration":{
+        "MaxParallelExecutionSteps":1
+    },
+    "PipelineExecutionDescription":"run pipeline using ds",
+    "PipelineExecutionDisplayName":"ds-stock-pipeline",
+    "PipelineName":"StockPipeline",
+    "PipelineParameters":[
+        {
+            "Name":"InputData",
+            "Value": "${s3_data_path}"
+        }
+    ]
+}

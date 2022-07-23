@@ -2,6 +2,8 @@ params:
   process_name: &process_name run_system
   project: &project "/home/lucky/WhaleOps/DolphinScheduler-MLOps-Stock-Analysis"
 
+Varible:
+  local_params: &local_params { "prop": "project", "direct": "IN", "type": "VARCHAR", "value": "${project}"}
 
 Process:
   name: *process_name
