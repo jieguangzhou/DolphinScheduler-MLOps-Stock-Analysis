@@ -70,7 +70,8 @@ def set_labels(signals, data_path, next_n=1):
         data_df["y"] = (next_n_df["close"] - data_df["close"]) / data_df["close"]
 
         data_df = data_df[~data_df["y"].isna()]
-        data_df["label"] = np.log(data_df["y"] + 1)
+        # data_df["label"] = np.log(data_df["y"] + 1)
+        data_df["label"] = (data_df["y"] > 0) * 1
 
         sub_signal_df = pd.merge(
             sub_signal_df, data_df[["label", "date", "y"]], how="left", on=["date"]
@@ -112,7 +113,7 @@ def get_training_data(feature_signal_file, data_path, save_path, test_date_n=7):
     columns.insert(0, columns.pop(columns.index("label")))
     datas = datas[columns]
     set_dataset_index(datas)
-    save_dataframe(datas, save_path)
+    save_dataframe(datas[:4000], save_path)
 
     return datas
 

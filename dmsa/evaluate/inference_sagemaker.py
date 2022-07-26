@@ -17,6 +17,7 @@ def inference_data(evaluate_data, top_n=10):
     result = df.sort_values("prediction", ascending=False)[:top_n]
     result = result[["prediction"]]
     result["score"] = result.pop("prediction")
+    result["confidence"] = result.pop("score")
 
     result["tmp"] = result.index
     result["code"] = result["tmp"].apply(lambda x: x.split("$")[1])
