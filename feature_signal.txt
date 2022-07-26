@@ -1,4 +1,4 @@
 feature: ma
 feature: bbands
 feature: talib_pattern
-signal: ma_up
+signal: ma_cross

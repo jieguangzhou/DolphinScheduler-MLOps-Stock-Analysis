@@ -7,7 +7,7 @@ from dmsa.data_api.china_daily_data import download_stock, get_stock_pool
 
 
 def download_all_stocks(start_date=None, end_date=None, save_folder="data", n=None):
-    codes = list(get_stock_pool())
+    codes = sorted(list(get_stock_pool()))
     os.makedirs(save_folder, exist_ok=True)
     if n:
         codes = codes[:n]

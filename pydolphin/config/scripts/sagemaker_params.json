@@ -8,7 +8,11 @@
     "PipelineParameters":[
         {
             "Name":"InputData",
-            "Value": "${s3_data_path}"
+            "Value": "${s3_training_data_path}"
+        },
+        {
+            "Name":"InferenceData",
+            "Value": "${s3_inference_data_path}"
         }
     ]
 }

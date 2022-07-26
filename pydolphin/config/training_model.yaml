@@ -1,32 +1,47 @@
-params:
+# User-defined parameters. The parameter suggestions are all written here
+Params:
   process_name: &process_name training_model
   project: &project "/home/lucky/WhaleOps/DolphinScheduler-MLOps-Stock-Analysis"
-  s3_data_path: &s3_data_path "s3://sagemaker-us-west-2-557980067422/dataset/dataset2.csv"
+  s3_training_data_path: &s3_training_data_path "s3://sagemaker-us-west-2-557980067422/dataset/dataset.csv"
+  s3_inference_data_path: &s3_inference_data_path "s3://sagemaker-us-west-2-557980067422/dataset/inference.csv"
 
+# The variable definitions in the YAML file are used for the following configuration
 Varible:
-  s3_local_params: &s3_local_params { "prop": "s3_data_path", "direct": "IN", "type": "VARCHAR", "value": *s3_data_path}
+  local_params_project: &local_params_project{ "prop": "project", "direct": "IN", "type": "VARCHAR", "value": "${project}"} 
+  local_params_training_path: &local_params_training_path { "prop": "s3_training_data_path", "direct": "IN", "type": "VARCHAR", "value": *s3_training_data_path}
+  local_params_inference_path: &local_params_inference_path { "prop": "s3_inference_data_path", "direct": "IN", "type": "VARCHAR", "value": *s3_inference_data_path}
 
+# Define the process
 Process:
   name: *process_name
   param:
       project: *project
-  execute: run
 
+# Define the tasks under the process
 Tasks:
   - 
     TaskType: Shell
     params:
-      name: prepare_data 
-      command: File("pydolphin/config/scripts/prepare_data.sh") 
+      name: prepare_training_data 
+      command: File("pydolphin/config/scripts/prepare_training_data.sh") 
       local_params: 
-        - *s3_local_params
-        - { "prop": "project", "direct": "IN", "type": "VARCHAR", "value": "${project}"}
-
+        - *local_params_project
+        - *local_params_training_path
   - 
+    TaskType: Shell
+    params:
+      name: prepare_inference_data 
+      command: File("pydolphin/config/scripts/prepare_inference_data.sh") 
+      local_params: 
+        - *local_params_project
+        - *local_params_inference_path
+
+  -
     TaskType: SageMaker
-    dependencies: [prepare_data]
+    dependencies: [prepare_inference_data, prepare_training_data]
     params:
       name: sagemaker
-      sagemaker_request_json: File("pydolphin/config/scripts/sagemaker_params.json") 
-      local_params: 
-        - *s3_local_params
+      sagemaker_request_json: File("pydolphin/config/scripts/sagemaker_params.json")
+      local_params:
+        - *local_params_training_path
+        - *local_params_inference_path

@@ -1,4 +1,3 @@
-import os
 import re
 
 import click
@@ -7,19 +6,31 @@ from pydolphinscheduler.core.process_definition import ProcessDefinition
 from ruamel import yaml
 
 
+class ProcessDefinitionDraw(ProcessDefinition):
+    @property
+    def task_location(self):
+        if not self.tasks:
+            return [self.tasks]
+        else:
+            return [
+                {"taskCode": task_code, "x": index * 200, "y": index * 200}
+                for index, task_code in enumerate(self.tasks)
+            ]
+
+
 def load_yaml(yaml_file) -> dict:
     with open(yaml_file, "r") as r_f:
         config = yaml.safe_load(r_f)
     return config
 
-
+# 重构
 @click.command()
 @click.option("-yaml_file")
 def create_process_definition(yaml_file):
     config = load_yaml(yaml_file)
     process_params = config["Process"]
-    execute = process_params.pop("execute", "submit")
-    with ProcessDefinition(**process_params) as pd:
+    is_run = process_params.pop("run", False)
+    with ProcessDefinitionDraw(**process_params, release_state="offline") as pd:
         dependencies = {}
         name2task = {}
         for task_data in config["Tasks"]:
@@ -34,6 +45,7 @@ def create_process_definition(yaml_file):
             if deps:
                 dependencies[task.name] = deps
             name2task[task.name] = task
+            print(f"create {task_type} task: {task.name}")
 
         for downstream_task_name, deps in dependencies.items():
             downstream_task = name2task[downstream_task_name]
@@ -41,12 +53,10 @@ def create_process_definition(yaml_file):
                 upstram_task = name2task[upstram_task_name]
                 upstram_task >> downstream_task
 
-        if execute == "submit":
-            pd.submit()
-        elif execute == "run":
+        pd.submit()
+        if is_run:
+            print(f"run process: {pd}")
             pd.run()
-        else:
-            assert False
 
 
 def parse_params(params):
