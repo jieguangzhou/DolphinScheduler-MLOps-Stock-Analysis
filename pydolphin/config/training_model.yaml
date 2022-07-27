@@ -2,8 +2,8 @@
 Params:
   process_name: &process_name training_model
   project: &project "/home/lucky/WhaleOps/DolphinScheduler-MLOps-Stock-Analysis"
-  s3_training_data_path: &s3_training_data_path "s3://sagemaker-us-west-2-557980067422/dataset/dataset.csv"
-  s3_inference_data_path: &s3_inference_data_path "s3://sagemaker-us-west-2-557980067422/dataset/inference.csv"
+  s3_training_data_path: &s3_training_data_path "s3://ds-stock/dataset/dataset.csv"
+  s3_inference_data_path: &s3_inference_data_path "s3://ds-stock/dataset/inference.csv"
 
 # The variable definitions in the YAML file are used for the following configuration
 Varible:

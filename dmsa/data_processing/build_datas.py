@@ -99,7 +99,7 @@ def get_inference_datas(feature_signal_file, save_path):
     save_dataframe(datas, save_path)
 
 
-def get_training_data(feature_signal_file, data_path, save_path, test_date_n=7):
+def get_training_data(feature_signal_file, data_path, save_path):
     datas = create_datas(feature_signal_file)
     datas = set_labels(datas, data_path)
 
@@ -113,7 +113,7 @@ def get_training_data(feature_signal_file, data_path, save_path, test_date_n=7):
     columns.insert(0, columns.pop(columns.index("label")))
     datas = datas[columns]
     set_dataset_index(datas)
-    save_dataframe(datas[:4000], save_path)
+    save_dataframe(datas, save_path)
 
     return datas
 

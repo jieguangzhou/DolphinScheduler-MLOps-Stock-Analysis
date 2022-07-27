@@ -23,7 +23,7 @@ Tasks:
                 export PYTHONPATH=${project}
                 source ${project}/env/bin/activate
                 python -m dmsa.evaluate.inference_sagemaker \
-                      --evaluate_data s3://sagemaker-us-west-2-557980067422/stock_out/inference.csv \
+                      --evaluate_data s3://ds-stock/stock_out/inference.csv \
                       --top_n 10
       local_params: 
         - *local_params 

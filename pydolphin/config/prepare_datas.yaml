@@ -23,7 +23,7 @@ Tasks:
                 export PYTHONPATH=${project}
                 source ${project}/env/bin/activate
                 data_path=${project}/data/daily
-                python -m dmsa.data.download ${data_path} 200
+                python -m dmsa.data.download ${data_path}
       local_params: 
         - *local_params 
 

@@ -23,7 +23,6 @@ def load_yaml(yaml_file) -> dict:
         config = yaml.safe_load(r_f)
     return config
 
-# 重构
 @click.command()
 @click.option("-yaml_file")
 def create_process_definition(yaml_file):
