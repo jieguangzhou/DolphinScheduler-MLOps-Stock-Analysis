@@ -12,7 +12,7 @@ Process:
   name: *process_name
   param:
       project: *project
-  run: False
+  run: True
 
 # Define the tasks under the process
 Tasks:
