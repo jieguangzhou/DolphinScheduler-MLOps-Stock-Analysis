@@ -64,15 +64,16 @@ def create_process_definition(yaml_file):
 def parse_params(params):
     for key, value in params.items():
         if isinstance(value, str):
-            params[key] = parse_string_param_if_file(value)
-            params[key] = parse_string_param_if_env(value)
+            value = parse_string_param_if_file(value)
+            value = parse_string_param_if_env(value)
+            params[key] = value
 
         elif isinstance(value, dict):
             parse_params(value)
 
 
 def parse_string_param_if_file(string_param: str):
-    if string_param.startswith("File"):
+    if string_param.startswith("$File"):
         path = re.findall(r"\$File\{\"(.*?)\"\}", string_param)[0]
         with open(path, "r") as read_file:
             string_param = "".join(read_file)
