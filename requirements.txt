@@ -7,4 +7,5 @@ pymysql
 click
 akshare
 pytdx
-apache-dolphinscheduler
+https://github.com/jieguangzhou/dolphinscheduler/releases/download/dev/apache-dolphinscheduler-dev.tar.gz
+boto3

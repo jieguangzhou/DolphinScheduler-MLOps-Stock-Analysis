@@ -1,7 +1,7 @@
 # User-defined parameters. The parameter suggestions are all written here
 Params:
   process_name: &process_name run_system
-  project: &project "/home/lucky/WhaleOps/DolphinScheduler-MLOps-Stock-Analysis"
+  project: &project $Env{STOCK_PROJECT}
 
 # The variable definitions in the YAML file are used for the following configuration
 Varible:
@@ -12,7 +12,7 @@ Process:
   name: *process_name
   param:
       project: *project
-  run: True
+  run: False
 
 # Define the tasks under the process
 Tasks:

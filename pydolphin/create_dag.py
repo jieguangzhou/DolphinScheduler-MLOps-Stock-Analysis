@@ -1,4 +1,5 @@
 import re
+import os
 
 import click
 from pydolphinscheduler import tasks
@@ -23,12 +24,14 @@ def load_yaml(yaml_file) -> dict:
         config = yaml.safe_load(r_f)
     return config
 
+
 @click.command()
 @click.option("-yaml_file")
 def create_process_definition(yaml_file):
     config = load_yaml(yaml_file)
     process_params = config["Process"]
     is_run = process_params.pop("run", False)
+    parse_params(process_params)
     with ProcessDefinitionDraw(**process_params, release_state="offline") as pd:
         dependencies = {}
         name2task = {}
@@ -62,13 +65,24 @@ def parse_params(params):
     for key, value in params.items():
         if isinstance(value, str):
             params[key] = parse_string_param_if_file(value)
+            params[key] = parse_string_param_if_env(value)
+
+        elif isinstance(value, dict):
+            parse_params(value)
 
 
 def parse_string_param_if_file(string_param: str):
     if string_param.startswith("File"):
-        path = re.findall(r"File\(\"(.*?)\"\)", string_param)[0]
+        path = re.findall(r"\$File\{\"(.*?)\"\}", string_param)[0]
         with open(path, "r") as read_file:
             string_param = "".join(read_file)
+    return string_param
+
+
+def parse_string_param_if_env(string_param: str):
+    if "$Env" in string_param:
+        key = re.findall(r"\$Env\{(.*?)\}", string_param)[0]
+        string_param = os.environ.get(key)
     return string_param
 
 
