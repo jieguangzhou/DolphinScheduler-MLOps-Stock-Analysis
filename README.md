@@ -76,3 +76,6 @@ After we run the command, we can open '[http://localhost:12345/dolphinscheduler/
 
 
 In fact, we just need to run the `pydolphinscheduler yaml -f pyds/run_system.yaml` to create the workflow, most of commands in [pydolphin_init.sh](./pydolphin_init.sh) is used to initialize pydolphinscheduler configuration.
+
+
+If you want to run quickly, you can add `200` after `python -m dmsa.data.download ${data_path}` in [prepare_datas.yaml](./pyds/prepare_datas.yaml), that means only use 200 stock in workflow.
