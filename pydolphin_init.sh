@@ -20,6 +20,8 @@ pydolphinscheduler config --set default.workflow.tenant $tenant
 pydolphinscheduler config --set default.workflow.project $project_name
 pydolphinscheduler config --set default.workflow.queue default
 
+
+# Configuration variables, which are applied in yaml files
 export STOCK_PROJECT=$(pwd)
-# create workflows
+# Create workflows
 pydolphinscheduler yaml -f pyds/run_system.yaml

@@ -76,11 +76,3 @@ After we run the command, we can open '[http://localhost:12345/dolphinscheduler/
 
 
 In fact, we just need to run the `pydolphinscheduler yaml -f pyds/run_system.yaml` to create the workflow, most of commands in [pydolphin_init.sh](./pydolphin_init.sh) is used to initialize pydolphinscheduler configuration.
-
-
-```shell
-# Configuration variables, which are applied in yaml files
-export STOCK_PROJECT=$(pwd)
-# create workflows
-pydolphinscheduler yaml -f pyds/run_system.yaml
-```
