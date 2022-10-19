@@ -1,11 +1,15 @@
 # /bin/bash
 
 # init config
-user=sagemaker
+user=Stock-Analysis
 password=123456
 tenant=$USER
-project_name=ds-sagemaker_mlops
+project_name=pydolphin
+api_address=127.0.0.1
+api_port=25333
 
+pydolphinscheduler config --set java_gateway.address $api_address
+pydolphinscheduler config --set java_gateway.port $api_port
 
 pydolphinscheduler config --set default.user.name $user
 pydolphinscheduler config --set default.user.password $password 
@@ -19,8 +23,4 @@ pydolphinscheduler config --set default.workflow.queue default
 
 export STOCK_PROJECT=$(pwd)
 # create workflows
-python pydolphin/create_dag.py -yaml_file pydolphin/config/prepare_datas.yaml
-python pydolphin/create_dag.py -yaml_file pydolphin/config/training_model.yaml
-python pydolphin/create_dag.py -yaml_file pydolphin/config/recommend_stock.yaml
-python pydolphin/create_dag.py -yaml_file pydolphin/config/run_system.yaml
-
+pydolphinscheduler yaml -f pyds/run_system.yaml

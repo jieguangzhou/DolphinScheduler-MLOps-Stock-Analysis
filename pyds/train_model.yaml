@@ -1,0 +1,37 @@
+# The variable definitions in the YAML file are used for the following configuration
+Varible:
+  local_params_project: &local_params_project { "prop": "project", "direct": "IN", "type": "VARCHAR", "value": "${project}"} 
+  local_params_training_path: &local_params_training_path { "prop": "s3_training_data_path", "direct": "IN", "type": "VARCHAR", "value": "s3://ds-stock/dataset/dataset.csv"}
+  local_params_inference_path: &local_params_inference_path { "prop": "s3_inference_data_path", "direct": "IN", "type": "VARCHAR", "value": "s3://ds-stock/dataset/inference.csv"}
+
+# Define the process
+workflow:
+  name: train_model 
+  param:
+    project: $ENV{STOCK_PROJECT} 
+
+# Define the tasks under the process
+tasks:
+  - 
+    name: prepare_training_data 
+    task_type: Shell
+    command: $FILE{"scripts/prepare_training_data.sh"}
+    local_params: 
+      - *local_params_project
+      - *local_params_training_path
+  - 
+    name: prepare_inference_data 
+    task_type: Shell
+    command: $FILE{"scripts/prepare_inference_data.sh"}
+    local_params: 
+      - *local_params_project
+      - *local_params_inference_path
+
+  -
+    name: sagemaker
+    task_type: SageMaker
+    deps: [prepare_inference_data, prepare_training_data]
+    sagemaker_request_json: $FILE{"scripts/sagemaker_params.json"} 
+    local_params:
+      - *local_params_training_path
+      - *local_params_inference_path

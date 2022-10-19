@@ -1,0 +1,19 @@
+# Define the workflow
+workflow:
+  name: recommend_stock 
+  param:
+      project: $ENV{STOCK_PROJECT} 
+# Define the tasks under the workflow
+tasks:
+  - 
+    name: recommend_stock 
+    task_type: Shell
+    command: |
+              export PYTHONPATH=${project}
+              source ${project}/env/bin/activate
+              python -m dmsa.evaluate.inference_sagemaker \
+                    --evaluate_data s3://ds-stock/stock_out/inference.csv \
+                    --top_n 10
+    local_params: 
+      - { "prop": "project", "direct": "IN", "type": "VARCHAR", "value": "${project}"}
+

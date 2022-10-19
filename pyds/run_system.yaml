@@ -1,0 +1,25 @@
+
+# Define the process
+workflow:
+  name: run_system
+  param:
+      project: $ENV{STOCK_PROJECT} 
+  run: true
+
+# Define the tasks under the process
+tasks:
+  - 
+    name: prepare_datas
+    task_type: SubProcess 
+    process_definition_name: $WORKFLOW{"prepare_datas.yaml"} 
+  - 
+    name: train_model 
+    task_type: SubProcess
+    deps: [prepare_datas]
+    process_definition_name: $WORKFLOW{"train_model.yaml"}
+
+  - 
+    name: recommend_stock 
+    task_type: SubProcess
+    deps: [train_model]
+    process_definition_name: $WORKFLOW{"recommend_stock.yaml"}  

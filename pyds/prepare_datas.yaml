@@ -1,0 +1,52 @@
+# The variable definitions in the YAML file are used for the following configuration
+Varible:
+  local_params: &local_params { "prop": "project", "direct": "IN", "type": "VARCHAR", "value": "${project}"}
+
+# Define the process
+workflow:
+  name: prepare_datas 
+  param:
+      project: $ENV{STOCK_PROJECT} 
+
+# Define the tasks under the process
+tasks:
+  - 
+    name: download_data
+    task_type: Shell
+    command: |
+              export PYTHONPATH=${project}
+              source ${project}/env/bin/activate
+              data_path=${project}/data/daily
+              python -m dmsa.data.download ${data_path} 200
+    local_params: 
+      - *local_params 
+
+  - 
+    name: calc_signals 
+    task_type: Shell
+    deps: [download_data]
+    command: |
+              export PYTHONPATH=${project}
+              source ${project}/env/bin/activate
+              data_path=${project}/data/daily
+              python -m dmsa.data_processing.calc_signals \
+                    --data_path ${data_path} \
+                    --name_file ${project}/feature_signal.txt 
+    local_params: 
+      - *local_params 
+
+
+  - 
+    name: calc_features 
+    task_type: Shell
+    deps: [download_data]
+    command: |
+              export PYTHONPATH=${project}
+              source ${project}/env/bin/activate
+              data_path=${project}/data/daily
+              python -m dmsa.data_processing.calc_features \
+                  --data_path $data_path \
+                  --name_file ${project}/feature_signal.txt
+    local_params:
+      - *local_params 
+
