@@ -8,4 +8,3 @@ click
 akshare
 pytdx
 boto3
-apache-dolphinscheduler

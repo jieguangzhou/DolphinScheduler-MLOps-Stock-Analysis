@@ -26,7 +26,7 @@ aws_secret_access_key = <YOUR AWS SECRET KEY>
 region = <YOUR AWS SECRET KEY>
 ```
 
-After preparing the configuration, we need to prepare the python environment
+After preparing the configuration, we need to prepare the python environment to run the dmsa project.
 
 ```shell
 virtualenv -p /usr/bin/python3 env
@@ -53,17 +53,21 @@ resource.aws.secret.access.key=<YOUR AWS SECRET KEY>
 resource.aws.region=<AWS REGION>
 ```
 
-
-### Create SageMaker Pipeline
-
-[pipeline notebook](pydolphin_stock.ipynb)
-
-
-### Run system
-
 In [PyDolphinScheduler 3.1.0](https://dolphinscheduler.apache.org/python/3.1.0/tutorial.html), we can use YAML files to define workflow.
 
 For example: [dmsa yaml files](pyds)
+
+Install `PythonDolphinScheduler`: `python -m pip install apache-dolphinscheduler`
+
+`Pydolphinscheduler` is used to submit workflow to DolphinScheduler, has nothing to do with the `env` environment created in dmsa above.
+
+
+### Create SageMaker Pipeline
+
+[pipeline notebook](./pydolphin_stock.ipynb)
+
+
+### Run system
 
 
 In this example, we can run `bash pydolphin_init.sh` to run workflow in DolphinScheduler.
@@ -71,8 +75,7 @@ In this example, we can run `bash pydolphin_init.sh` to run workflow in DolphinS
 After we run the command, we can open '[http://localhost:12345/dolphinscheduler/ui](http://localhost:12345/dolphinscheduler/ui)' to fine the project and workflow.
 
 
-
-In fact, we just need to run the pydolphinscheduler to create the workflow
+In fact, we just need to run the `pydolphinscheduler yaml -f pyds/run_system.yaml` to create the workflow, most of commands in [pydolphin_init.sh](./pydolphin_init.sh) is used to initialize pydolphinscheduler configuration.
 
 
 ```shell
